@@ -34,3 +34,6 @@ To install the latest version of PostgreSQL, follow the steps below depending on
 	'''bash
 	sudo apt install postgis
 	'''
+
+Some other help:
+https://tecadmin.net/install-postgis-on-ubuntu/
