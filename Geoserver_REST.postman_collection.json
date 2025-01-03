@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "4ddca9ac-8e34-43c8-9bd8-fba83ce3d0b3",
+		"name": "Geoserver_REST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1406113"
+	},
+	"item": [
+		{
+			"name": "Create Workspace (NOT Working)",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "geoserver",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<dataStore>\r\n    <name>nc</name>\r\n    <type>PostGIS</type>\r\n    <connectionParameters>\r\n        <host>13.93.146.169</host>\r\n        <port>5432</port>\r\n        <database>gisdb</database>\r\n        <user>postgres</user>\r\n        <passwd>postgres</passwd>\r\n        <dbtype>postgis</dbtype>\r\n    </connectionParameters>\r\n</dataStore>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{geoserver_ip}}:8080/geoserver/rest/workspaces/{{workspace}}/datastores",
+					"protocol": "http",
+					"host": [
+						"{{geoserver_ip}}"
+					],
+					"port": "8080",
+					"path": [
+						"geoserver",
+						"rest",
+						"workspaces",
+						"{{workspace}}",
+						"datastores"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Publish Layer",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "geoserver",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<featureType>\r\n    <name>nc_counties</name>\r\n    <nativeName>nc_counties</nativeName>\r\n    <srs>EPSG:3857</srs>\r\n</featureType>\r\n",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{geoserver_ip}}:8080/geoserver/rest/workspaces/{{workspace}}/datastores/nc/featuretypes",
+					"protocol": "http",
+					"host": [
+						"{{geoserver_ip}}"
+					],
+					"port": "8080",
+					"path": [
+						"geoserver",
+						"rest",
+						"workspaces",
+						"{{workspace}}",
+						"datastores",
+						"nc",
+						"featuretypes"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

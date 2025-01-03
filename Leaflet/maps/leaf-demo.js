@@ -21,14 +21,14 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19
 }).addTo(map);
 L.tileLayer.wms('http://13.93.146.169:8080/geoserver/ows?', {
-    layers: 'NorthCarolinaTest:nc_precincts', // Replace with your workspace and layer name
+    layers: 'NorthCarolinaTest:nc_precincts_geo', // Replace with your workspace and layer name; This layer is from PostGIS
     format: 'image/png',
     transparent: true,
     attribution: 'GeoServer Layer',
     tiled: false // Optional: For tiled requests
   }).addTo( map );
 L.tileLayer.wms('http://13.93.146.169:8080/geoserver/ows?', {
-    layers: 'NorthCarolinaTest:nc_counties', // Replace with your workspace and layer name
+    layers: 'NorthCarolinaTest:nc_counties_geo', // Replace with your workspace and layer name; This layer is from PostGIS
     format: 'image/png',
     transparent: true,
     attribution: 'GeoServer Layer',
