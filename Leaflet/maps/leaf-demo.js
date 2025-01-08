@@ -43,8 +43,8 @@ map.on('click', function (e) {
         service: 'WMS',
         version: '1.1.1',
         request: 'GetFeatureInfo',
-        layers: 'NorthCarolinaTest:nc_counties',
-        query_layers: 'NorthCarolinaTest:nc_counties',
+        layers: 'NorthCarolinaTest:nc_precincts_geo,NorthCarolinaTest:nc_counties_geo',
+        query_layers: 'NorthCarolinaTest:nc_precincts_geo,NorthCarolinaTest:nc_counties_geo',
         styles: '',
         bbox: map.getBounds().toBBoxString(),
         width: map.getSize().x,
@@ -60,32 +60,34 @@ map.on('click', function (e) {
     var lng = e.latlng.lng;
 
     var queryString = Object.keys(params).map(key => key + '=' + encodeURIComponent(params[key])).join('&');
-    var fullUrl = wmsUrl + queryString;
+    //var fullUrl = wmsUrl + queryString;
+	var fullUrl = wmsUrl + new URLSearchParams(params).toString();
 
     console.log('GetFeatureInfo URL:', fullUrl);
 
-//     fetch(fullUrl)
-//        .then(response => response.json())
-//        .then(data => {
-//            if (data.features.length > 0) {
-//                var featureInfo = JSON.stringify(data.features, null, 2); // Customize as needed
-//                L.popup()
-//                    .setLatLng(e.latlng)
-//                    .setContent('<pre>' + featureInfo + '</pre>')
-//                    .openOn(map);
-//            } else {
-//                L.popup()
-//                    .setLatLng(e.latlng)
-//                    .setContent('No features found at this location.')
-//                    .openOn(map);
-//            }
-//        })
-//        .catch(error => console.error('Error fetching GetFeatureInfo:', error));
+/*     fetch(fullUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.features.length > 0) {
+                var featureInfo = JSON.stringify(data.features, null, 2); // Customize as needed
+                L.popup()
+                    .setLatLng(e.latlng)
+                    .setContent('<pre>' + featureInfo + '</pre>')
+                    .openOn(map);
+            } else {
+                L.popup()
+                    .setLatLng(e.latlng)
+                    .setContent('No features found at this location.')
+                    .openOn(map);
+            }
+        })
+        .catch(error => console.error('Error fetching GetFeatureInfo:', error));
+*/
 
-		fetch(fullUrl)
+/*		fetch(fullUrl)
 		.then(response => response.json())
 		.then(data => {
-			if (data.features && data.features.length > 0) {
+ 			if (data.features && data.features.length > 0) {
 				const feature = data.features[0];
 				const props = feature.properties;
 
@@ -94,25 +96,78 @@ map.on('click', function (e) {
 				const state = props.state;
 				const area = props["square_mil"];
 				const perimeter = props.perimeter;
-
+				
 				// Construct popup content
 				const popupContent = `
 					<strong>County:</strong> ${countyName}<br>
 					<strong>State:</strong> ${state}<br>
 					<strong>Area:</strong> ${area} sq mi<br>
 					<strong>Perimeter:</strong> ${perimeter} miles
-				`;
+				`; */
 
-				// Add popup to map
-				L.popup()
-					.setLatLng([lat, lng]) // Replace with the correct coordinates for your feature
-					.setContent(popupContent)
-					.openOn(map);
-			} else {
+				
+fetch(fullUrl)
+    .then(response => response.json())
+    .then(data => {
+        console.log("Response data:", data); // Log the entire response
+        // Proceed with your popup logic
+    });
+
+// Fetch data from the Geoserver
+
+fetch(fullUrl)
+    .then(response => response.json())
+    .then(data => {
+        console.log("Response data:", data);
+
+        if (data.features && data.features.length > 0) {
+            // Group features by layer
+            const featuresByLayer = {};
+
+            data.features.forEach(feature => {
+                const layerName = feature.id.split('.')[0]; // Extract layer name
+                if (!featuresByLayer[layerName]) {
+                    featuresByLayer[layerName] = [];
+                }
+                featuresByLayer[layerName].push(feature);
+            });
+
+            // Generate popup content
+            let popupContent = "<b>Clicked Features:</b><br>";
+
+            for (const [layer, features] of Object.entries(featuresByLayer)) {
+                popupContent += `<b>Layer:</b> ${layer}<br>`;
+                features.forEach(feature => {
+                    for (const [key, value] of Object.entries(feature.properties)) {
+                        popupContent += `<b>${key}:</b> ${value}<br>`;
+                    }
+                    popupContent += "<hr>";
+                });
+            }
+
+            // Show the popup at the clicked location
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent(popupContent)
+                .openOn(map);
+        } else {
+            // No features found
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent("No features found.")
+                .openOn(map);
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching feature info:", error);
+    });
+	
+	
+			/*} else {
 				console.error('No features found');
 			}
 		})
-.catch(error => console.error('Error:', error));
+.catch(error => console.error('Error:', error));*/
 });
 
 
