@@ -56,27 +56,63 @@ map.on('click', function (e) {
         x: Math.round(map.layerPointToContainerPoint(e.layerPoint).x),
         y: Math.round(map.layerPointToContainerPoint(e.layerPoint).y)
     };
+	var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
 
     var queryString = Object.keys(params).map(key => key + '=' + encodeURIComponent(params[key])).join('&');
     var fullUrl = wmsUrl + queryString;
 
     console.log('GetFeatureInfo URL:', fullUrl);
 
-    fetch(fullUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (data.features.length > 0) {
-                var featureInfo = JSON.stringify(data.features, null, 2); // Customize as needed
-                L.popup()
-                    .setLatLng(e.latlng)
-                    .setContent('<pre>' + featureInfo + '</pre>')
-                    .openOn(map);
-            } else {
-                L.popup()
-                    .setLatLng(e.latlng)
-                    .setContent('No features found at this location.')
-                    .openOn(map);
-            }
-        })
-        .catch(error => console.error('Error fetching GetFeatureInfo:', error));
+//     fetch(fullUrl)
+//        .then(response => response.json())
+//        .then(data => {
+//            if (data.features.length > 0) {
+//                var featureInfo = JSON.stringify(data.features, null, 2); // Customize as needed
+//                L.popup()
+//                    .setLatLng(e.latlng)
+//                    .setContent('<pre>' + featureInfo + '</pre>')
+//                    .openOn(map);
+//            } else {
+//                L.popup()
+//                    .setLatLng(e.latlng)
+//                    .setContent('No features found at this location.')
+//                    .openOn(map);
+//            }
+//        })
+//        .catch(error => console.error('Error fetching GetFeatureInfo:', error));
+
+		fetch(fullUrl)
+		.then(response => response.json())
+		.then(data => {
+			if (data.features && data.features.length > 0) {
+				const feature = data.features[0];
+				const props = feature.properties;
+
+				// Extract relevant details
+				const countyName = props.county;
+				const state = props.state;
+				const area = props["square_mil"];
+				const perimeter = props.perimeter;
+
+				// Construct popup content
+				const popupContent = `
+					<strong>County:</strong> ${countyName}<br>
+					<strong>State:</strong> ${state}<br>
+					<strong>Area:</strong> ${area} sq mi<br>
+					<strong>Perimeter:</strong> ${perimeter} miles
+				`;
+
+				// Add popup to map
+				L.popup()
+					.setLatLng([lat, lng]) // Replace with the correct coordinates for your feature
+					.setContent(popupContent)
+					.openOn(map);
+			} else {
+				console.error('No features found');
+			}
+		})
+.catch(error => console.error('Error:', error));
 });
+
+
